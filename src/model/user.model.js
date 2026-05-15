@@ -24,8 +24,8 @@ const userSchema = new mongoose.Schema(
 
         role: {
             type: String,
-            enum: [user, admin],
-            default: "user",
+            enum: ['user', 'admin'],
+            default: 'user',
         },
 
         otp: {
@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
         isVerified: {
             type: Boolean,
             default: false,
+        },
+
+        refreshToken: {
+            type: String,
         },
     }, {
        
