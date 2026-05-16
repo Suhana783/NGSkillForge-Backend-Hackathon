@@ -7,10 +7,8 @@ const {
 } = require('../services/course.service.js')
 
 
-exports.createCourse = async (req, res) => {
-
+exports.createCourse = async (req, res, next) => {
     try {
-
         const course = await createCourseService(req.body);
         res.status(201).json({
             success: true,
@@ -18,14 +16,12 @@ exports.createCourse = async (req, res) => {
             data: course
         })
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message
-        })
+        error.statusCode = error.statusCode || 400;
+        next(error);
     }
 };
 
-exports.updateCourse = async (req, res) => {
+exports.updateCourse = async (req, res, next) => {
     try {
         const update = await updateCourseService(req.params.id, req.body)
         res.status(200).json({
@@ -34,15 +30,13 @@ exports.updateCourse = async (req, res) => {
             data: update
         })
     } catch (error) {
-        res.status(404).json({
-            success: false,
-            message: "Course not found",
-        })
+        error.statusCode = error.statusCode || 404;
+        next(error);
     }
 };
 
 
-exports.getAllCourses = async (req, res) => {
+exports.getAllCourses = async (req, res, next) => {
     try {
         const getCourses = await getAllCourseService()
         res.status(200).json({
@@ -51,14 +45,12 @@ exports.getAllCourses = async (req, res) => {
             data: getCourses
         })
     } catch (error) {
-        res.status(404).json({
-            success: false,
-            message: "Not found"
-        })
+        error.statusCode = error.statusCode || 404;
+        next(error);
     }
 };
 
-exports.getCourse = async (req, res) => {
+exports.getCourse = async (req, res, next) => {
     try {
         const oneCourse = await getCourseService(req.params.id)
         res.status(200).json({
@@ -66,15 +58,12 @@ exports.getCourse = async (req, res) => {
             data: oneCourse
         })
     } catch (error) {
-        res.status(404).json({
-            success: false,
-            message:"Course not found"
-        })
+        error.statusCode = error.statusCode || 404;
+        next(error);
     }
 };
 
-exports.deleteCourse = async (req, res) => {
-
+exports.deleteCourse = async (req, res, next) => {
     try {
         const deleteCourseById = await deleteCourseService(req.params.id)
         res.status(200).json({
@@ -82,9 +71,7 @@ exports.deleteCourse = async (req, res) => {
             message: "Course deleted successfully"
         })
     } catch (error) {
-        res.status(404).json({
-            success: false,
-            message:"Check id"
-        })
+        error.statusCode = error.statusCode || 404;
+        next(error);
     }
 };

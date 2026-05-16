@@ -6,38 +6,42 @@ const {
     refreshTokenService,
 } = require('../services/auth.service');
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
     try {
         const result = await registerUserService(req.body);
         res.status(201).json({success: true, message: result.message, userId: result.userId});
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        error.statusCode = error.statusCode || 400;
+        next(error);
     }
 };
 
-exports.verifyOTP = async (req, res) => {
+exports.verifyOTP = async (req, res, next) => {
     try {
         const result = await verifyOTPService(req.body);
         res.status(200).json({success: true, message: result.message});
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        error.statusCode = error.statusCode || 400;
+        next(error);
     }
 };
 
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
     try {
         const result = await loginUserService(req.body);
         res.status(200).json({success: true, ...result});
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        error.statusCode = error.statusCode || 400;
+        next(error);
     }
 };
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
     try {
         const result = await refreshTokenService(req.body);
         res.status(200).json({success: true, ...result});
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        error.statusCode = error.statusCode || 400;
+        next(error);
     }
 };

@@ -1,58 +1,9 @@
-const nodemailer = require('nodemailer');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../model/user.model');
-
-const accessTokenSecret = process.env.JWT_ACCESS_SECRET || 'access_secret_dev';
-const refreshTokenSecret = process.env.JWT_REFRESH_SECRET || 'refresh_secret_dev';
-
-const createAccessToken = (user) => {
-    return jwt.sign(
-        {
-            userId: user._id,
-            email: user.email,
-            role: user.role,
-        },
-        accessTokenSecret,
-        { expiresIn: '15m' }
-    );
-};
-
-const createRefreshToken = (user) => {
-    return jwt.sign(
-        {
-            userId: user._id,
-            email: user.email,
-        },
-        refreshTokenSecret,
-        { expiresIn: '7d' }
-    );
-};
-
-const sendOTPEmail = async (email, otp) => {
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-        throw new Error('SMTP_USER and SMTP_PASS are required to send Gmail OTP email');
-    }
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-        },
-    });
-
-    await transporter.verify();
-
-    const info = await transporter.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
-        to: email,
-        subject: 'Your OTP code',
-        text: `Your verification code is ${otp}. It expires in 5 minutes.`,
-    });
-
-    console.log('Email sent:', info.messageId);
-};
+const sendOTPEmail = require('../../utils/sendEmail');
+const { createAccessToken, createRefreshToken } = require('../../utils/token');
+const { refreshTokenSecret } = require('../config/secrets');
 
 const registerUserService = async (userData) => {
     const {name, email, password, role} = userData;
@@ -64,7 +15,7 @@ const registerUserService = async (userData) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 5 * 60 * 1000; 
+    const otpExpiry = Date.now() + 18 * 60 * 1000; 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({

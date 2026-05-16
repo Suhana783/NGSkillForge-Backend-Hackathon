@@ -35,3 +35,11 @@ const deleteCourseService = async (deleteCourse) => {
     const deleteCourseById = await Course.findByIdAndDelete(deleteCourse);
     return deleteCourseById;
 };
+
+module.exports = {
+    createCourseService,
+    updateCourseService,
+    getAllCourseService,
+    getCourseService,
+    deleteCourseService,
+};
