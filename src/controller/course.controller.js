@@ -38,11 +38,15 @@ exports.updateCourse = async (req, res, next) => {
 
 exports.getAllCourses = async (req, res, next) => {
     try {
-        const getCourses = await getAllCourseService()
+        const result = await getAllCourseService(req.query);
         res.status(200).json({
             success: true,
-            message: "All course here",
-            data: getCourses
+            message: "All courses here",
+            currentPage: result.currentPage,
+            totalPages: result.totalPages,
+            totalCourses: result.totalCourses,
+            coursesOnThisPage: result.coursesOnThisPage,
+            data: result.courses,
         })
     } catch (error) {
         error.statusCode = error.statusCode || 404;
